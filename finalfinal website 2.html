@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profi-Kreditrechner | Enrik Fazlija</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --accent: #10b981;
+            --error: #f43f5e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 950px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            background-color: #0f172a;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .result-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .rate-hero {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .rate-hero h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .rate-value {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .table-section {
+            margin-top: 10px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background: #1e293b;
+            padding: 16px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        tr:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .col-left {
+            text-align: left;
+        }
+
+        .error-message {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--error);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: none;
+            border: 1px solid var(--error);
+            font-weight: 500;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding-bottom: 30px;
+        }
+
+        footer strong {
+            color: var(--primary);
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>Darlehensrechner</h1>
+        <p>Diese Website wurde durch <strong>Enrik Fazlija</strong> programmiert.</p>
+    </header>
+
+    <div id="errorBox" class="error-message"></div>
+
+    <div class="main-layout">
+        <aside class="card">
+            <div class="input-group">
+                <label for="loanAmount">Brutto-Kreditbetrag (€)</label>
+                <input type="number" id="loanAmount" value="45000">
+            </div>
+
+            <div class="input-group">
+                <label for="downPayment">Anzahlung (€)</label>
+                <input type="number" id="downPayment" value="5000">
+            </div>
+
+            <div class="input-group">
+                <label for="residualValue">Schlussrate / Restschuld (€)</label>
+                <input type="number" id="residualValue" value="15000">
+            </div>
+
+            <div class="input-group">
+                <label for="interestRate">Sollzins p.a. (%)</label>
+                <input type="number" id="interestRate" step="0.01" value="4.99">
+            </div>
+
+            <div class="input-group">
+                <label>Laufzeit</label>
+                <div class="row">
+                    <input type="number" id="durationValue" value="48">
+                    <select id="durationUnit">
+                        <option value="months">Monate</option>
+                        <option value="years">Jahre</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="startDate">Startdatum</label>
+                <input type="date" id="startDate">
+            </div>
+
+            <div class="input-group">
+                <label for="viewMode">Tabellenansicht</label>
+                <select id="viewMode">
+                    <option value="monthly">Monatlich</option>
+                    <option value="yearly">Jährlich</option>
+                </select>
+            </div>
+        </aside>
+
+        <main class="result-panel">
+            <div class="rate-hero">
+                <h2>Ihre monatliche Rate</h2>
+                <div id="monthlyRateDisplay" class="rate-value">0,00 €</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Finanzierungsbetrag</div>
+                    <div id="financedAmount" class="stat-value">0,00 €</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Gesamtkosten</div>
+                    <div id="totalCost" class="stat-value">0,00 €</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Zinsaufwand</div>
+                    <div id="totalInterest" class="stat-value">0,00 €</div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-left">Periode</th>
+                                <th>Rate</th>
+                                <th>Zinsen</th>
+                                <th>Tilgung</th>
+                                <th>Restschuld</th>
+                            </tr>
+                        </thead>
+                        <tbody id="planBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        Diese Website wurde durch <strong>Enrik Fazlija</strong> programmiert.
+    </footer>
+</div>
+
+<script>
+    const inputs = ['loanAmount', 'downPayment', 'residualValue', 'interestRate', 'durationValue', 'durationUnit', 'startDate', 'viewMode'];
+    const ui = {};
+    inputs.forEach(id => ui[id] = document.getElementById(id));
+    
+    const elements = {
+        monthlyRate: document.getElementById('monthlyRateDisplay'),
+        financedAmount: document.getElementById('financedAmount'),
+        totalCost: document.getElementById('totalCost'),
+        totalInterest: document.getElementById('totalInterest'),
+        planBody: document.getElementById('planBody'),
+        errorBox: document.getElementById('errorBox')
+    };
+
+    ui.startDate.value = new Date().toISOString().split('T')[0];
+
+    inputs.forEach(id => ui[id].addEventListener('input', calculate));
+
+    function formatCurrency(num) {
+        return new Intl.NumberFormat('de-DE', {
+            style: 'currency',
+            currency: 'EUR',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(num);
+    }
+
+    function calculate() {
+        elements.errorBox.style.display = 'none';
+        
+        const rawAmount = parseFloat(ui.loanAmount.value) || 0;
+        const downPayment = parseFloat(ui.downPayment.value) || 0;
+        const residualValue = parseFloat(ui.residualValue.value) || 0;
+        const annualRate = (parseFloat(ui.interestRate.value) || 0) / 100;
+        const durationValue = parseInt(ui.durationValue.value) || 0;
+        const isYears = ui.durationUnit.value === 'years';
+        const totalMonths = isYears ? durationValue * 12 : durationValue;
+        const startDate = new Date(ui.startDate.value);
+        const viewMode = ui.viewMode.value;
+
+        const K = rawAmount - downPayment;
+
+        if (K <= 0 && rawAmount > 0) {
+            showError("Die Anzahlung darf nicht höher als die Kreditsumme sein.");
+            return;
+        }
+        if (residualValue >= K && K > 0) {
+             showError("Die Schlussrate muss kleiner als der Finanzierungsbetrag sein.");
+             return;
+        }
+        if (totalMonths <= 0) return;
+
+        const i = annualRate / 12;
+        let rate = 0;
+
+        if (i === 0) {
+            rate = (K - residualValue) / totalMonths;
+        } else {
+            const pow = Math.pow(1 + i, totalMonths);
+            rate = (K * i * pow - residualValue * i) / (pow - 1);
+        }
+
+        elements.monthlyRate.innerText = formatCurrency(rate);
+        elements.financedAmount.innerText = formatCurrency(K);
+
+        renderPlan(K, i, rate, totalMonths, residualValue, startDate, viewMode);
+    }
+
+    function renderPlan(K, i, rate, n, residual, start, view) {
+        let balance = K;
+        let totalInterest = 0;
+        let html = "";
+        let yearSums = { rate: 0, interest: 0, principal: 0, lastBalance: 0 };
+        let currentYear = start.getFullYear();
+
+        for (let m = 1; m <= n; m++) {
+            const interest = balance * i;
+            let principal = rate - interest;
+            
+            if (m === n) {
+                principal = balance - residual;
+            }
+
+            const actualRate = (m === n) ? (interest + principal + residual) : (interest + principal);
+            balance -= principal;
+            totalInterest += interest;
+
+            const date = new Date(start);
+            date.setMonth(start.getMonth() + m - 1);
+
+            if (view === 'monthly') {
+                html += `<tr>
+                    <td class="col-left">${date.toLocaleDateString('de-DE', { month: '2-digit', year: 'numeric' })} ${m === n ? ' (Schluss)' : ''}</td>
+                    <td>${formatCurrency(actualRate)}</td>
+                    <td>${formatCurrency(interest)}</td>
+                    <td>${formatCurrency(principal)}</td>
+                    <td>${formatCurrency(Math.abs(balance) < 0.01 ? 0 : balance)}</td>
+                </tr>`;
+            } else {
+                yearSums.rate += actualRate;
+                yearSums.interest += interest;
+                yearSums.principal += principal;
+                yearSums.lastBalance = Math.abs(balance) < 0.01 ? 0 : balance;
+
+                if (date.getFullYear() !== currentYear || m === n) {
+                    html += `<tr>
+                        <td class="col-left">Jahr ${currentYear}</td>
+                        <td>${formatCurrency(yearSums.rate)}</td>
+                        <td>${formatCurrency(yearSums.interest)}</td>
+                        <td>${formatCurrency(yearSums.principal)}</td>
+                        <td>${formatCurrency(yearSums.lastBalance)}</td>
+                    </tr>`;
+                    currentYear = date.getFullYear() + (m === n ? 0 : 1);
+                    yearSums = { rate: 0, interest: 0, principal: 0, lastBalance: 0 };
+                }
+            }
+        }
+
+        elements.planBody.innerHTML = html;
+        elements.totalInterest.innerText = formatCurrency(totalInterest);
+        elements.totalCost.innerText = formatCurrency(K + totalInterest);
+    }
+
+    function showError(msg) {
+        elements.errorBox.innerText = msg;
+        elements.errorBox.style.display = 'block';
+        elements.monthlyRate.innerText = "0,00 €";
+        elements.planBody.innerHTML = "";
+    }
+
+    calculate();
+</script>
+
+</body>
+</html>
+
